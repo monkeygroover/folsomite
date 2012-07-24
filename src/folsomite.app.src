@@ -1,0 +1,21 @@
+%%-*- mode: erlang -*-
+{application, folsomite,
+ [
+  {description, "blow up your graphite / riemann server with folsom metrics"},
+  {vsn, git},
+  {registered, [folsomite_sup,
+                folsomite_server,
+                folsomite_graphite_client_sup
+               ]},
+  {applications, [kernel,
+                  stdlib,
+                  folsom,
+                  zeta
+                 ]},
+  {mod, {folsomite_app, no_arg}},
+  {env, [{graphite_host, "localhost"},
+         {graphite_port, 2003},
+         %% {flush_interval, 60000}
+         {flush_interval, 1000}
+        ]}
+ ]}.
