@@ -116,7 +116,8 @@ node_key() ->
 a2l(X) when is_list(X) -> X;
 a2l(X) when is_atom(X) -> atom_to_list(X);
 a2l(X) when is_integer(X) -> integer_to_list(X);
-a2l(X) when is_float(X) -> float_to_list(X).
+a2l(X) when is_float(X) -> float_to_list(X);
+a2l(X) when is_tuple(X) -> string:join([a2l(A) || A <- tuple_to_list(X)], ".").
 
 get_env(Name) ->
     {ok, Value} = application:get_env(?APP, Name),
