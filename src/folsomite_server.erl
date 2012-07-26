@@ -91,11 +91,13 @@ expand(X, NamePrefix) ->
 send_stats(State, Metrics) ->
     Timestamp = num2str(unixtime()),
     lists:foreach(fun({K, V}) ->
-                          zeta:svh(K, V, ok, [{tags, [folsomite]}])
+                          zeta:cvh(K, V, ok, [{tags, [folsomite]}])
                   end, Metrics),
     Message = [format1(State#state.base_key, M, Timestamp) || M <- Metrics],
-    {ok, Socket} = folsomite_graphite_client_sup:get_client(),
-    folsomite_graphite_client:send(Socket, Message).
+    case folsomite_graphite_client_sup:get_client() of
+        {ok, Socket} -> folsomite_graphite_client:send(Socket, Message);
+        {error, _} = Error -> Error
+    end.
 
 format1(Base, {K, V}, Timestamp) ->
     ["folsomite.", Base, ".", K, " ", a2l(V), " ", Timestamp, "\n"].
