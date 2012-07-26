@@ -45,9 +45,9 @@ handle_cast(Cast, State) ->
 
 handle_info({timeout, _R, ?TIMER_MSG},
             #state{timer_ref = _R, flush_interval = FlushInterval} = State) ->
+    Ref = erlang:start_timer(FlushInterval, self(), ?TIMER_MSG),
     Metrics = get_stats(),
     send_stats(State, Metrics),
-    Ref = erlang:start_timer(FlushInterval, self(), ?TIMER_MSG),
     {noreply, State#state{timer_ref = Ref}};
 handle_info(Info, State) ->
     unexpected(info, Info),
