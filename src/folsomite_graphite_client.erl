@@ -12,23 +12,23 @@
 start_link(Host, Port) -> gen_server:start_link(?MODULE, [Host, Port], []).
 
 %% api
-send(Socket, Message) -> gen_server:call(Socket, {send, Message}).
+send(Socket, Message) -> gen_server:cast(Socket, {send, Message}).
 
 %% gen_server callbacks
 init([Host, Port]) ->
     {ok, TCPSocket} = gen_tcp:connect(Host,
-                                    Port,
-                                    [binary, {active, false}],
-                                    5000),
+                                      Port,
+                                      [binary, {active, false}],
+                                      5000),
     {ok, #state{tcp_socket = TCPSocket}}.
 
-handle_call({send, Message}, _, #state{tcp_socket = TCPSocket} = State) ->
-    ok = gen_tcp:send(TCPSocket, Message),
-    {reply, ok, State};
 handle_call(Call, _, State) ->
     unexpected(call, Call),
     {noreply, State}.
 
+handle_cast({send, Message}, #state{tcp_socket = TCPSocket} = State) ->
+    ok = gen_tcp:send(TCPSocket, Message),
+    {noreply, State};
 handle_cast(Cast, State) ->
     unexpected(cast, Cast),
     {noreply, State}.
