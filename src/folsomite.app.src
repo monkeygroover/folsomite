@@ -15,7 +15,6 @@
   {mod, {folsomite_app, no_arg}},
   {env, [{graphite_host, "localhost"},
          {graphite_port, 2003},
-         %% {flush_interval, 60000}
-         {flush_interval, 1000}
+         {flush_interval, 60000}
         ]}
  ]}.
