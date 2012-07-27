@@ -91,9 +91,9 @@ expand(X, NamePrefix) ->
 send_stats(State) ->
     Metrics = get_stats(),
     Timestamp = num2str(unixtime()),
-    lists:foreach(fun({K, V}) ->
-                          zeta:cvh(K, V, ok, [{tags, [folsomite]}])
-                  end, Metrics),
+    Events = [zeta:ev({node(), K}, V, ok, [{tags, [folsomite]}]) ||
+                 {K, V} <- Metrics],
+    zeta:cv_batch(Events),
     Message = [format1(State#state.base_key, M, Timestamp) || M <- Metrics],
     case folsomite_graphite_client_sup:get_client() of
         {ok, Socket} -> folsomite_graphite_client:send(Socket, Message);
