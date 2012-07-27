@@ -124,7 +124,4 @@ get_env(Name) ->
     Value.
 
 unexpected(Type, Message) ->
-    info(" unexpected ~p ~p~n", [Type, Message]).
-
-info(Format, Args) ->
-    log4erl:info(io_lib:format("~p(~p)" ++ Format, [?MODULE, self() | Args])).
+    error_logger:info_msg(" unexpected ~p ~p~n", [Type, Message]).
