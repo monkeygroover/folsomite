@@ -46,8 +46,8 @@ handle_cast(Cast, State) ->
 handle_info({timeout, _R, ?TIMER_MSG},
             #state{timer_ref = _R, flush_interval = FlushInterval} = State) ->
     Ref = erlang:start_timer(FlushInterval, self(), ?TIMER_MSG),
-    Metrics = get_stats(),
-    send_stats(State, Metrics),
+    F = fun() -> send_stats(State) end,
+    folsom_metrics:histogram_timed_update({?APP, send_stats}, F),
     {noreply, State#state{timer_ref = Ref}};
 handle_info(Info, State) ->
     unexpected(info, Info),
@@ -88,7 +88,8 @@ expand(X, NamePrefix) ->
     [{K, X}].
 
 
-send_stats(State, Metrics) ->
+send_stats(State) ->
+    Metrics = get_stats(),
     Timestamp = num2str(unixtime()),
     lists:foreach(fun({K, V}) ->
                           zeta:cvh(K, V, ok, [{tags, [folsomite]}])
