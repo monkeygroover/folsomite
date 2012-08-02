@@ -14,7 +14,8 @@
 -define(TIMER_MSG, '#flush').
 
 -record(state, {flush_interval :: integer(),
-                base_key       :: string(),
+                node_key       :: string(),
+                node_prefix    :: string(),
                 timer_ref      :: reference()}).
 
 
@@ -27,7 +28,8 @@ init(no_arg) ->
     FlushInterval = get_env(flush_interval),
     Ref = erlang:start_timer(FlushInterval, self(), ?TIMER_MSG),
     State = #state{flush_interval = FlushInterval,
-                   base_key = node_key(),
+                   node_key = node_key(),
+                   node_prefix = node_prefix(),
                    timer_ref = Ref},
     {ok, State}.
 
@@ -105,6 +107,11 @@ format1(Base, {K, V}, Timestamp) ->
 num2str(NN) -> lists:flatten(io_lib:format("~w",[NN])).
 unixtime()  -> {Meg, S, _} = os:timestamp(), Meg*1000000 + S.
 
+
+node_prefix() ->
+    NodeList = atom_to_list(node()),
+    [A, _] = string:tokens(NodeList, "@"),
+    A.
 
 node_key() ->
     NodeList = atom_to_list(node()),
