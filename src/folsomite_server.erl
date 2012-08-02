@@ -87,7 +87,10 @@ expand(X, NamePrefix) ->
 send_stats(State) ->
     Metrics = get_stats(),
     Timestamp = num2str(unixtime()),
-    Events = [zeta:ev({node(), K}, V, ok, [{tags, [folsomite]}]) ||
+    Hostname = net_adm:localhost(),
+    Node = node(),
+    Events =
+        [zeta:ev({Hostname, {Node, K}}, V, ok, [{tags, [folsomite]}]) ||
                  {K, V} <- Metrics],
     zeta:cv_batch(Events),
     Message = [format1(State#state.base_key, M, Timestamp) || M <- Metrics],
