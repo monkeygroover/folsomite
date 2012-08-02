@@ -108,9 +108,8 @@ unixtime()  -> {Meg, S, _} = os:timestamp(), Meg*1000000 + S.
 
 node_key() ->
     NodeList = atom_to_list(node()),
-    {ok, R} = re:compile("[\@\.]"),
     Opts = [global, {return, list}],
-    re:replace(NodeList, R, "_", Opts).
+    re:replace(NodeList, "[\@\.]", "_", Opts).
 
 
 a2l(X) when is_list(X) -> X;
