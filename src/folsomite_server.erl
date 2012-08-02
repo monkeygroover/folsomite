@@ -90,12 +90,12 @@ send_stats(State) ->
     Metrics = get_stats(),
     Timestamp = num2str(unixtime()),
     Hostname = net_adm:localhost(),
-    Node = node(),
+    Prefix = State#state.node_prefix ++ ".",
     Events =
-        [zeta:ev({Hostname, {Node, K}}, V, ok, [{tags, [folsomite]}]) ||
+        [zeta:ev({Hostname, Prefix ++ K}, V, ok, [{tags, [folsomite]}]) ||
                  {K, V} <- Metrics],
     zeta:cv_batch(Events),
-    Message = [format1(State#state.base_key, M, Timestamp) || M <- Metrics],
+    Message = [format1(State#state.node_key, M, Timestamp) || M <- Metrics],
     case folsomite_graphite_client_sup:get_client() of
         {ok, Socket} -> folsomite_graphite_client:send(Socket, Message);
         {error, _} = Error -> Error
