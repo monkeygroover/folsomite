@@ -13,9 +13,7 @@
 -define(APP, folsomite).
 -define(TIMER_MSG, '#flush').
 
--record(state, {graphite_host  :: inet:ip_address() | inet:hostname(),
-                graphite_port  :: integer(),
-                flush_interval :: integer(),
+-record(state, {flush_interval :: integer(),
                 base_key       :: string(),
                 timer_ref      :: reference()}).
 
@@ -28,9 +26,7 @@ start_link() ->
 init(no_arg) ->
     FlushInterval = get_env(flush_interval),
     Ref = erlang:start_timer(FlushInterval, self(), ?TIMER_MSG),
-    State = #state{graphite_host = get_env(graphite_host),
-                   graphite_port = get_env(graphite_port),
-                   flush_interval = FlushInterval,
+    State = #state{flush_interval = FlushInterval,
                    base_key = node_key(),
                    timer_ref = Ref},
     {ok, State}.
