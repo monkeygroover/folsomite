@@ -58,8 +58,11 @@ code_change(_, State, _) -> {ok, State}.
 
 %% internal
 get_stats() ->
+    Memory = expand0(folsom_vm_metrics:get_memory(), [vm]),
+    Stats = expand0(folsom_vm_metrics:get_statistics(), [vm]),
     Metrics = folsom_metrics:get_metrics_info(),
-    lists:flatmap(fun expand_metric/1, Metrics).
+    Memory ++ Stats ++ lists:flatmap(fun expand_metric/1, Metrics).
+
 
 expand_metric({Name, [{type, Type}]}) ->
     M = case Type of
