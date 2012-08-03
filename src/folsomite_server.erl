@@ -80,7 +80,7 @@ expand_metric({Name, [{type, Type}]}) ->
 expand_metric(_) ->
     [].
 
-expand0(M, [Name]) -> lists:flatten(expand(M, [Name])).
+expand0(M, NamePrefix) -> lists:flatten(expand(M, NamePrefix)).
 
 expand({K, X}, NamePrefix) ->
     expand(X, [K | NamePrefix]);
