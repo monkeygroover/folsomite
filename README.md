@@ -10,7 +10,7 @@ metrics (https://github.com/codahale/metrics/).
 
 Folsomite runs in your Erlang virtual machine, periodically aggregates
 all present Folsom metrics and forwards them to your Graphite and
-Riemann service.
+Riemann services.
 
 
 Forwarding to Riemann uses the zeta library from reifyhealth [on
