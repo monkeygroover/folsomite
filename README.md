@@ -38,35 +38,35 @@ Comments and patches always welcome!
 Any version of erlang suitable to run Folsom should be supported. Use
 rebar to build like:
 
-  ./rebar get-deps compile
+    ./rebar get-deps compile
 
 You can start it from the shell:
 
-       $ erl -pa ebin deps/*/ebin -s folsomite
+    $ erl -pa ebin deps/*/ebin -s folsomite
 
 #### Example config
 
-  %% -*-erlang-*-
-  {application, my_app,
-   [{description, "my_app"},
-    {vsn, git},
-    {registered, []},
-    {applications, [kernel,
-                    stdlib,
-                    folsomite]},
-    {mod, []},
-    {env,
-     [{folsom, [{counter, [{my_app, my_counter}, {my_app, my_counter2}]},
-                {gauge, [my_gauge]},
-                {histogram, [{my_app, my_histo}, slide_uniform, {60, 1028}]}
-               ]}
-      {folsomite,
-       [{graphite_host, "graphite.example.com"}]},
-      {zeta,
-       [{clients,
-         [{default,
-           {"riemann.example.com", 5555, {keepalive, 180000}}}]}]}
-     ]}
-   ]}.
+    %% -*-erlang-*-
+    {application, my_app,
+     [{description, "my_app"},
+      {vsn, git},
+      {registered, []},
+      {applications, [kernel,
+                      stdlib,
+                      folsomite]},
+      {mod, []},
+      {env,
+       [{folsom, [{counter, [{my_app, my_counter}, {my_app, my_counter2}]},
+                  {gauge, [my_gauge]},
+                  {histogram, [{my_app, my_histo}, slide_uniform, {60, 1028}]}
+                 ]}
+        {folsomite,
+         [{graphite_host, "graphite.example.com"}]},
+        {zeta,
+         [{clients,
+           [{default,
+             {"riemann.example.com", 5555, {keepalive, 180000}}}]}]}
+       ]}
+     ]}.
 
 (the histogram example above needs https://github.com/boundary/folsom/pull/31).
