@@ -26,7 +26,7 @@ Comments and patches always welcome!
 
 [1]: https://github.com/boundary/folsom
 [2]: http://graphite.wikidot.com/
-[3]: http://aphyr.github.com/riemann/clients.html
+[3]: http://aphyr.github.com/riemann/index.html
 [4]: https://github.com/reifyhealth/zeta
 [5]: https://github.com/campanja/folsomite/
 [6]: http://www.campanja.com/
