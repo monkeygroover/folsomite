@@ -142,7 +142,7 @@ a2l(X) when is_integer(X) -> integer_to_list(X);
 a2l(X) when is_float(X) -> float_to_list(X);
 a2l(X) when is_tuple(X) -> string:join([a2l(A) || A <- tuple_to_list(X)], " ").
 
-space2dot(X) -> string:join(string:split(X, " "), ".").
+space2dot(X) -> string:join(string:tokens(X, " "), ".").
 
 get_env(Name) ->
     {ok, Value} = application:get_env(?APP, Name),
