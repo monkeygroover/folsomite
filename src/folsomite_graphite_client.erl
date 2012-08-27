@@ -39,8 +39,13 @@ handle_call(Call, _, State) ->
     {noreply, State}.
 
 handle_cast({send, Message}, #state{tcp_socket = TCPSocket} = State) ->
-    ok = gen_tcp:send(TCPSocket, Message),
-    {noreply, State};
+    case gen_tcp:send(TCPSocket, Message) of
+        ok ->
+            {noreply, State};
+        {error, closed} ->
+            error_logger:info_msg("folsomite_graphite_client disconnected"),
+            {stop, {shutdown, connection_closed}, State}
+    end;
 handle_cast(Cast, State) ->
     unexpected(cast, Cast),
     {noreply, State}.
