@@ -99,7 +99,7 @@ expand({K, X}, NamePrefix) ->
 expand([_|_] = Xs, NamePrefix) ->
     [expand(X, NamePrefix) || X <- Xs];
 expand(X, NamePrefix) ->
-    K = string:join(lists:map(fun a2l/1, lists:reverse(NamePrefix)), "."),
+    K = string:join(lists:map(fun a2l/1, lists:reverse(NamePrefix)), " "),
     [{K, X}].
 
 
@@ -107,7 +107,7 @@ send_stats(State) ->
     Metrics = get_stats(),
     Timestamp = num2str(unixtime()),
     Hostname = net_adm:localhost(),
-    Prefix = State#state.node_prefix ++ ".",
+    Prefix = State#state.node_prefix ++ " ",
     Events =
         [zeta:ev({Hostname, Prefix ++ K}, V, ok, [{tags, [folsomite]}]) ||
                  {K, V} <- Metrics],
@@ -119,7 +119,7 @@ send_stats(State) ->
     end.
 
 format1(Base, {K, V}, Timestamp) ->
-    ["folsomite.", Base, ".", K, " ", a2l(V), " ", Timestamp, "\n"].
+    ["folsomite.", Base, ".", space2dot(K), " ", a2l(V), " ", Timestamp, "\n"].
 
 num2str(NN) -> lists:flatten(io_lib:format("~w",[NN])).
 unixtime()  -> {Meg, S, _} = os:timestamp(), Meg*1000000 + S.
@@ -140,7 +140,9 @@ a2l(X) when is_list(X) -> X;
 a2l(X) when is_atom(X) -> atom_to_list(X);
 a2l(X) when is_integer(X) -> integer_to_list(X);
 a2l(X) when is_float(X) -> float_to_list(X);
-a2l(X) when is_tuple(X) -> string:join([a2l(A) || A <- tuple_to_list(X)], ".").
+a2l(X) when is_tuple(X) -> string:join([a2l(A) || A <- tuple_to_list(X)], " ").
+
+space2dot(X) -> string:join(string:tokens(X, " "), ".").
 
 get_env(Name) ->
     {ok, Value} = application:get_env(?APP, Name),
