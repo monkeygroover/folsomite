@@ -20,6 +20,7 @@
 start(normal, no_arg) ->
     folsom_metrics:new_histogram(
       {folsomite, send_stats}, slide_uniform, {60, 1028}),
+    riemann_error_logger:register_with_logger(),
     folsomite_sup:start_link().
 
 stop(_) -> ok.
