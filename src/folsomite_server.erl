@@ -26,6 +26,7 @@
 -define(TIMER_MSG, '#flush').
 
 -record(state, {flush_interval :: integer(),
+                tags           :: list(atom()),
                 node_key       :: string(),
                 node_prefix    :: string(),
                 timer_ref      :: reference()}).
@@ -39,8 +40,10 @@ start_link() ->
 init(no_arg) ->
     process_flag(trap_exit, true),
     FlushInterval = get_env(flush_interval),
+    Tags = get_env(tags, []),
     Ref = erlang:start_timer(FlushInterval, self(), ?TIMER_MSG),
     State = #state{flush_interval = FlushInterval,
+                   tags = Tags,
                    node_key = node_key(),
                    node_prefix = node_prefix(),
                    timer_ref = Ref},
@@ -117,9 +120,10 @@ send_stats(State) ->
     Timestamp = num2str(unixtime()),
     Hostname = net_adm:localhost(),
     Prefix = State#state.node_prefix,
-    Heartbeat = prepare_event(Hostname, Prefix, "heartbeat", 1, []),
+    Tags = State#state.tags,
+    Heartbeat = prepare_event(Hostname, Prefix, "heartbeat", 1, Tags),
     Events =
-        [Heartbeat|[prepare_event(Hostname, Prefix, K, V, [transient]) ||
+        [Heartbeat|[prepare_event(Hostname, Prefix, K, V, [transient|Tags]) ||
             {K, V} <- Metrics]],
     zeta:sv_batch(Events),
     Message = [format1(State#state.node_key, M, Timestamp) || M <- Metrics],
@@ -158,8 +162,15 @@ a2l(X) when is_tuple(X) -> string:join([a2l(A) || A <- tuple_to_list(X)], " ").
 space2dot(X) -> string:join(string:tokens(X, " "), ".").
 
 get_env(Name) ->
-    {ok, Value} = application:get_env(?APP, Name),
-    Value.
+    get_env(Name, undefined).
+
+get_env(Name, Default) ->
+    case application:get_env(?APP, Name) of
+        {ok, Value} ->
+            Value;
+        undefined ->
+            Default
+    end.
 
 unexpected(Type, Message) ->
     error_logger:info_msg(" unexpected ~p ~p~n", [Type, Message]).
