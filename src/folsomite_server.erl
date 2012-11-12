@@ -40,7 +40,7 @@ start_link() ->
 init(no_arg) ->
     process_flag(trap_exit, true),
     FlushInterval = get_env(flush_interval),
-    Tags = folsomite_zeta:get_tags(),
+    Tags = [folsomite|folsomite_zeta:get_tags()],
     Ref = erlang:start_timer(FlushInterval, self(), ?TIMER_MSG),
     State = #state{flush_interval = FlushInterval,
                    tags = Tags,
