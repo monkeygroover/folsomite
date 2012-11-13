@@ -7,7 +7,7 @@ event(K, V, Opts) ->
     event(node_prefix(), K, V, [{tags, get_tags()}|Opts]).
 
 event(Prefix, K, V, Opts) ->
-    event(Prefix ++ " " ++ K, V, ok, Opts).
+    send_event(Prefix ++ " " ++ K, V, ok, Opts).
 
 host_event(K, V, Opts) ->
     host_event(node_prefix(), K, V, [{tags, get_tags()}|Opts]).
