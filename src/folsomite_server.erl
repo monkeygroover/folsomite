@@ -96,7 +96,7 @@ expand_metric({Name, [{type, Type}]}) ->
                                  folsom_metrics:get_histogram_statistics(Name));
             Type1 ->
                 case lists:member(Type1,
-                                  [counter, gauge, meter, meter_reader]) of
+                                  [counter, gauge, meter, meter_reader, duration]) of
                     true -> folsom_metrics:get_metric_value(Name);
                     false -> []
                 end
