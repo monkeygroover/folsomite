@@ -28,11 +28,15 @@ send(Socket, Message) -> gen_server:cast(Socket, {send, Message}).
 
 %% gen_server callbacks
 init([Host, Port]) ->
-    {ok, TCPSocket} = gen_tcp:connect(Host,
-                                      Port,
-                                      [binary, {active, false}],
-                                      5000),
-    {ok, #state{tcp_socket = TCPSocket}}.
+    SocketOpts = [binary, {active, false}],
+    case gen_tcp:connect(Host, Port, SocketOpts, 5000) of
+        {ok, TCPSocket} ->
+            {ok, #state{tcp_socket = TCPSocket}};
+        {error, Reason} ->
+            error_logger:error_msg("Connection to ~p:~p failed with reason ~p.",
+                                   [Host, Port, Reason]),
+            {stop, Reason}
+    end.
 
 handle_call(Call, _, State) ->
     unexpected(call, Call),
