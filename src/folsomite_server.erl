@@ -112,7 +112,7 @@ expand({K, X}, NamePrefix) ->
 expand([_|_] = Xs, NamePrefix) ->
     [expand(X, NamePrefix) || X <- Xs];
 expand(X, NamePrefix) ->
-    K = string:join(lists:map(fun a2l/1, lists:reverse(NamePrefix)), " "),
+    K = string:join(lists:map(fun stringify/1, lists:reverse(NamePrefix)), " "),
     [{K, X}].
 
 send_stats(State) ->
@@ -134,7 +134,7 @@ send_stats(State) ->
     end.
 
 format1(Base, {K, V}, Timestamp) ->
-    ["folsomite.", Base, ".", space2dot(K), " ", a2l(V), " ", Timestamp, "\n"].
+    ["folsomite.", Base, ".", space2dot(K), " ", stringify(V), " ", Timestamp, "\n"].
 
 num2str(NN) -> lists:flatten(io_lib:format("~w",[NN])).
 unixtime()  -> {Meg, S, _} = os:timestamp(), Meg*1000000 + S.
@@ -151,11 +151,13 @@ node_key() ->
     re:replace(NodeList, "[\@\.]", "_", Opts).
 
 
-a2l(X) when is_list(X) -> X;
-a2l(X) when is_atom(X) -> atom_to_list(X);
-a2l(X) when is_integer(X) -> integer_to_list(X);
-a2l(X) when is_float(X) -> float_to_list(X);
-a2l(X) when is_tuple(X) -> string:join([a2l(A) || A <- tuple_to_list(X)], " ").
+stringify(X) when is_list(X) -> X;
+stringify(X) when is_atom(X) -> atom_to_list(X);
+stringify(X) when is_integer(X) -> integer_to_list(X);
+stringify(X) when is_float(X) -> float_to_list(X);
+stringify(X) when is_binary(X) -> binary_to_list(X);
+stringify(X) when is_tuple(X) ->
+    string:join([stringify(A) || A <- tuple_to_list(X)], " ").
 
 space2dot(X) -> string:join(string:tokens(X, " "), ".").
 
