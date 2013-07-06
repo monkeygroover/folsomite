@@ -89,19 +89,27 @@ get_stats() ->
     Memory ++ Stats ++ lists:flatmap(fun expand_metric/1, Metrics).
 
 
-expand_metric({Name, [{type, Type}]}) ->
-    M = case Type of
+%% @doc Returns `[]' for unknown (skipped) metricts.
+-spec expand_metric({Name, Opts}) -> [Metric] when
+    Metric :: {K::string(), V::string()},
+    Name :: term(),
+    Opts :: [proplists:property()].
+expand_metric({Name, Opts}) ->
+    case proplists:get_value(type, Opts) of
+            undefined -> [];
             histogram ->
-                proplists:delete(histogram,
-                                 folsom_metrics:get_histogram_statistics(Name));
-            Type1 ->
-                case lists:member(Type1,
+                Stats = folsom_metrics:get_histogram_statistics(Name),
+                M = proplists:delete(histogram, Stats),
+                expand0(M, [Name]);
+            Type ->
+                case lists:member(Type,
                                   [counter, gauge, meter, meter_reader]) of
-                    true -> folsom_metrics:get_metric_value(Name);
+                    true ->
+                        M = folsom_metrics:get_metric_value(Name),
+                        expand0(M, [Name]);
                     false -> []
                 end
-        end,
-    expand0(M, [Name]);
+        end;
 expand_metric(_) ->
     [].
 
@@ -125,7 +133,7 @@ send_stats(State) ->
     Events =
         [Heartbeat|
          [folsomite_zeta:host_event(Prefix, K, V, [{tags, [transient|Tags]}]) ||
-             {K, V} <- Metrics]],
+          {K, V} <- Metrics]],
     zeta:sv_batch(Events),
     Message = [format1(State#state.node_key, M, Timestamp) || M <- Metrics],
     case folsomite_graphite_client_sup:get_client() of
