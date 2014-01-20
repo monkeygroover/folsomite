@@ -33,4 +33,4 @@ init(no_arg) ->
               1000,
               worker,
               [folsomite_server]},
-    {ok, {{one_for_all, 5, 3600}, [GraphiteClientSup, Worker]}}.
+    {ok, {{one_for_all, 15, 3600}, [GraphiteClientSup, Worker]}}.
