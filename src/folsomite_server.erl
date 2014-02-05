@@ -103,7 +103,7 @@ expand_metric({Name, Opts}) ->
                 expand0(M, [Name]);
             Type ->
                 case lists:member(Type,
-                                  [counter, gauge, meter, meter_reader]) of
+                                  [counter, gauge, meter, spiral, meter_reader]) of
                     true ->
                         M = folsom_metrics:get_metric_value(Name),
                         expand0(M, [Name]);
