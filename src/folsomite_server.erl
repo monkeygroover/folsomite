@@ -15,7 +15,7 @@
 -behaviour(gen_server).
 
 %% management api
--export([start_link/0, flush/0]).
+-export([start_link/0, finalize/0]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -36,8 +36,8 @@
 start_link() ->
     gen_server:start_link({local, ?MODULE}, ?MODULE, no_arg, []).
 
-flush() ->
-    gen_server:call(?MODULE, flush).
+finalize() ->
+    gen_server:call(?MODULE, finalize).
 
 %% gen_server callbacks
 init(no_arg) ->
@@ -52,8 +52,8 @@ init(no_arg) ->
                    timer_ref = Ref},
     {ok, State}.
 
-handle_call(flush, _, State) ->
-    do_flush(State),
+handle_call(finalize, _, State) ->
+    do_finalize(State),
     {reply, ok, State};
 
 handle_call(Call, _, State) ->
@@ -77,9 +77,9 @@ handle_info(Info, State) ->
     {noreply, State}.
 
 terminate(shutdown, State) ->
-    case application:get_env(flush_on_shutdown) of
+    case application:get_env(finalize_on_shutdown) of
         {ok, true} ->
-            do_flush(State);
+            do_finalize(State);
         _ ->
             ok
     end;
@@ -191,7 +191,7 @@ get_env(Name, Default) ->
 unexpected(Type, Message) ->
     error_logger:info_msg(" unexpected ~p ~p~n", [Type, Message]).
 
-do_flush(#state{timer_ref = Ref} = State) ->
+do_finalize(#state{timer_ref = Ref} = State) ->
     erlang:cancel_timer(Ref),
     Prefix = State#state.node_prefix,
     Terminate = folsomite_zeta:host_event(Prefix, "heartbeat",

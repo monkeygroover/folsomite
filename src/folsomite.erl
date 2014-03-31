@@ -11,11 +11,11 @@
 %% limitations under the License.
 
 -module(folsomite).
--export([start/0, flush/0]).
+-export([start/0, finalize/0]).
 
 %% api
 start() -> start(folsomite).
-flush() -> folsomite_server:flush().
+finalize() -> folsomite_server:finalize().
 
 %% internal
 start(App) -> start_ok(App, application:start(App, permanent)).

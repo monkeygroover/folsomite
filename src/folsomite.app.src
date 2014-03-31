@@ -17,6 +17,6 @@
          {graphite_port, 2003},
          {flush_interval, 60000},
          {tags, []},
-         {flush_on_shutdown, true}
+         {finalize_on_shutdown, true}
         ]}
  ]}.
