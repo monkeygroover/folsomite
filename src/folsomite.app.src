@@ -16,6 +16,7 @@
   {env, [{graphite_host, "localhost"},
          {graphite_port, 2003},
          {flush_interval, 60000},
-         {tags, []}
+         {tags, []},
+         {flush_on_shutdown, true}
         ]}
  ]}.
