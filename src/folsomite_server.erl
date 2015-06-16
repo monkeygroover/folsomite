@@ -93,8 +93,9 @@ code_change(_, State, _) -> {ok, State}.
 get_stats() ->
     Memory = expand0(folsom_vm_metrics:get_memory(), [memory, vm]),
     Stats = expand0(folsom_vm_metrics:get_statistics(), [vm]),
+    Procs = expand0([{processes, length(erlang:processes())}], [vm]),
     Metrics = folsom_metrics:get_metrics_info(),
-    Memory ++ Stats ++ lists:flatmap(fun expand_metric/1, Metrics).
+    Memory ++ Stats ++ Procs ++ lists:flatmap(fun expand_metric/1, Metrics).
 
 
 %% @doc Returns `[]' for unknown (skipped) metricts.
